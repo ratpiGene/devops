@@ -26,6 +26,8 @@ Exemple de configuration via la variable d'environnement :
 
 ```bash
 export PING_LISTEN_PORT=8081
+#pour tester que la modif a pris effet
+echo $PING_LISTEN_PORT
 ```
 
 ## Installation 
