@@ -1,34 +1,41 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
-use dotenv::dotenv;
-use serde::Serialize;
 use std::env;
 
-#[derive(Serialize)] // Ajout de derive(Serialize) pour rendre les structures JSON-sérialisables
+#[derive(Debug)]
 struct Headers {
     method: String,
     uri: String,
-    host: Option<String>, // Option pour prendre en charge les cas où le champ n'est pas défini
-    user_agent: Option<String>, // Option pour prendre en charge les cas où le champ n'est pas défini
+    host: Option<String>,
+    user_agent: Option<String>,
+}
+
+impl Headers {
+    fn new(req: &HttpRequest) -> Self {
+        let full_url = format!("{}", req.uri());
+        let method = format!("{:?}", req.method());
+        let host = req.headers().get("host").map(|value| value.to_str().unwrap_or_default().to_string());
+        let user_agent = req.headers().get("user-agent").map(|value| value.to_str().unwrap_or_default().to_string());
+
+        Headers { method, uri: full_url, host, user_agent }
+    }
+
+    fn to_json_string(&self) -> String {
+        format!(
+            r#"{{"method":"{}","uri":"{}","host":{:?},"user_agent":{:?}}}"#,
+            self.method, self.uri, self.host, self.user_agent
+        )
+    }
 }
 
 async fn ping_handler(req: HttpRequest) -> HttpResponse {
-    let full_url = req.uri().to_string(); // Récupérer l'URL complète
-    println!("Received GET request on URL: {}", full_url);
-
-    // Récupération des headers de la requête
-    let headers = Headers {
-        method: format!("{:?}", req.method()),
-        uri: full_url.clone(), // Utiliser l'URL complète
-        host: req.headers().get("host").map(|value| value.to_str().unwrap_or_default().to_string()),
-        user_agent: req.headers().get("user-agent").map(|value| value.to_str().unwrap_or_default().to_string()),
-    };
+    let headers = Headers::new(&req);
 
     // Réponse au format JSON avec les headers
-    HttpResponse::Ok().json(headers)
+    HttpResponse::Ok().body(headers.to_json_string())
 }
 
 async fn default_handler(req: HttpRequest) -> HttpResponse {
-    let full_url = req.uri().to_string(); // Récupérer l'URL complète
+    let full_url = format!("{}", req.uri());
     println!("Received request on an unsupported route. URL: {}", full_url);
 
     HttpResponse::NotFound().finish()
@@ -36,8 +43,6 @@ async fn default_handler(req: HttpRequest) -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
-
     let port: u16 = env::var("PING_LISTEN_PORT")
         .ok()
         .and_then(|s| s.parse().ok())

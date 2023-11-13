@@ -15,9 +15,7 @@ Ce projet Rust a pour objectif de fournir un serveur HTTP simple avec une API qu
 - **Langage:** Rust
 - **Gestionnaire de paquets:** Cargo
 - **Outils:** 
-<span style="color:green">**Actix-web**</span> pour le développement du serveur HTTP, 
-<span style="color:green">**Serde**</span> pour la sérialisation/désérialisation JSON, 
-<span style="color:green">**Dotenv**</span> pour la gestion des variables d'environnement
+<span style="color:green">**Actix-web**</span> pour le développement du serveur HTTP
 - **Dépendances:** Voir `Cargo.toml` pour la liste complète
 
 ## Configuration
