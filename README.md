@@ -6,7 +6,7 @@ Ce projet Rust a pour objectif de fournir un serveur HTTP simple avec une API qu
 
 ## Fonctionnalités
 
-- **Endpoint `/ping`:** Lorsqu'une requête HTTP GET est effectuée sur `/ping`, le serveur renvoie les headers de la requête au format JSON.
+- **Endpoint `/ping`:** Lorsqu'une requête HTTP GET est effectuée sur `/ping`, le serveur renvoie les headers de la requête au format JSON. Pour tout autre requête, le serveur renvoie une erreur 404.
 
 - **Port configurable:** Le serveur écoute sur le port spécifié par la variable d'environnement `PING_LISTEN_PORT`. Si cette variable n'est pas définie, le serveur utilise le port par défaut 8080.
 
@@ -24,10 +24,10 @@ Ce projet Rust a pour objectif de fournir un serveur HTTP simple avec une API qu
 
 Le port sur lequel le serveur écoute peut être configuré via la variable d'environnement `PING_LISTEN_PORT`. Si cette variable n'est pas définie, le serveur utilise le port par défaut 8080.
 
-Exemple de configuration via la variable d'environnement :
+Exemple de configuration via la variable d'environnement via le fichier `.env`:
 
 ```bash
-export PING_LISTEN_PORT=8081
+PING_LISTEN_PORT=8081
 ```
 
 ## Installation 
@@ -48,4 +48,4 @@ cargo build
 # une fois que le build est terminé
 cargo run
 ```
-Le serveur devrait être accessible à l'adresse http://127.0.0.1:8080 (ou sur le port spécifié par **PING_LISTEN_PORT**). Si le fichier .env est absent, le serveur utilise le port 8080 par défaut.
+Le serveur devrait être accessible à l'adresse http://127.0.0.1:8080 (ou sur le port spécifié par **PING_LISTEN_PORT**).
