@@ -21,7 +21,7 @@ impl Headers {
 
     fn to_json_string(&self) -> String {
         format!(
-            r#"{{"method":"{}","uri":"{}","host":{:?},"user_agent":{:?}}}"#,
+            r#"{{"method":"{}","uri":"{}","host":{:?}," user_agent":{:?}}}"#,
             self.method, self.uri, self.host, self.user_agent
         )
     }
