@@ -1,5 +1,6 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use std::env;
+use std::fs;
 
 #[derive(Debug)]
 struct Headers {
@@ -41,8 +42,32 @@ async fn default_handler(req: HttpRequest) -> HttpResponse {
     HttpResponse::NotFound().finish()
 }
 
+fn load_env_file() {
+    if let Ok(contents) = fs::read_to_string(".env") {
+        for line in contents.lines() {
+            if let Some((key, value)) = parse_env_line(line) {
+                env::set_var(key, value);
+            }
+        }
+    }
+}
+
+fn parse_env_line(line: &str) -> Option<(&str, &str)> {
+    let mut parts = line.splitn(2, '=');
+    if let Some(key) = parts.next() {
+        if let Some(value) = parts.next() {
+            return Some((key.trim(), value.trim()));
+        }
+    }
+    None
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Charger le fichier .env manuellement
+    load_env_file();
+
+    // Récupérer le port à partir de la variable d'environnement
     let port: u16 = env::var("PING_LISTEN_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
@@ -50,6 +75,7 @@ async fn main() -> std::io::Result<()> {
 
     println!("Server is listening on port: {}", port);
 
+    // Créer le serveur Actix-web
     HttpServer::new(|| {
         App::new()
             .service(web::resource("/ping").route(web::get().to(ping_handler)))
